@@ -51,6 +51,11 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getAllTasks());
     }
 
+    /**
+     * Контроллер, который делает post-запрос для создания задачи
+     * @param taskToCreate доменное представление задачи
+     * @return возвращает 201 код в случае успеха
+     */
     @PostMapping()
     public ResponseEntity<Task> createTask(
             @RequestBody @Valid Task taskToCreate
@@ -58,5 +63,23 @@ public class TaskController {
         log.info("Called method createTask");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(taskService.createTask(taskToCreate));
+    }
+
+    /**
+     * Контроллер, который обновляет сущность задачи
+     * @param id задачи, которую меняем
+     * @param taskToUpdate новое содержимое задачи
+     * @return возвращает 200 код в случае успеха
+     *         возвращает 400 код, если задача не существует
+     *         TODO:(поменять статус код)возвращает 500 код, если задача выполнена
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(
+            @PathVariable("id") Long id,
+            @RequestBody @Valid Task taskToUpdate
+    ){
+        log.info("Called methode updateTask");
+        var updatedTak = taskService.updateTask(id, taskToUpdate);
+        return ResponseEntity.ok(updatedTak);
     }
 }

@@ -78,4 +78,26 @@ public class TaskService {
         var savedEntity = taskRepository.save(entityToSave);
         return toDomainTask(savedEntity);
     }
+
+    public Task updateTask(Long id, Task taskToUpdate) {
+        var taskEntity = taskRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+        if (taskEntity.getStatus() == TaskStatus.DONE){
+            throw new IllegalStateException("The completed task cannot be changed");
+        }
+        if (!taskToUpdate.deadlineDate().isAfter(taskToUpdate.createDateTime())){
+            throw new IllegalArgumentException("Start date most be 1 day earlier than end date");
+        }
+        var updatedTask = new TaskEntity(
+                taskEntity.getId(),
+                taskToUpdate.creatorId(),
+                taskToUpdate.assignedUserId(),
+                taskToUpdate.status(),
+                taskToUpdate.createDateTime(),
+                taskToUpdate.deadlineDate(),
+                taskToUpdate.priority()
+        );
+        taskRepository.save(updatedTask);
+        return toDomainTask(updatedTask);
+    }
 }
