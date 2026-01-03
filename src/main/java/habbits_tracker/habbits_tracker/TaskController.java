@@ -82,4 +82,24 @@ public class TaskController {
         var updatedTak = taskService.updateTask(id, taskToUpdate);
         return ResponseEntity.ok(updatedTak);
     }
+
+    /**
+     * Контроллер, который удаляет задачу
+     * @param id задачи
+     * @return возвращает 200 код, если операция прошла успешно
+     *         возвращает 404 код, если айди не существующей задачи
+     */
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<Void> deleteTask(
+            @PathVariable("id") Long id
+    ){
+        try{
+            taskService.deleteTask(id);
+            return ResponseEntity.ok()
+                    .build();
+        } catch (NoSuchElementException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+    }
 }

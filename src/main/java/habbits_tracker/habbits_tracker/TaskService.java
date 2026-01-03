@@ -1,6 +1,7 @@
 package habbits_tracker.habbits_tracker;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ public class TaskService {
      */
     public List<Task> getAllTasks() {
         List<TaskEntity> allEntities = taskRepository.findAll();
+        log.info("Get all tasks successful");
         return allEntities.stream()
                 .map(this::toDomainTask
                 ).toList();
@@ -76,6 +78,7 @@ public class TaskService {
                 TaskPriority.LOW
         );
         var savedEntity = taskRepository.save(entityToSave);
+        log.info("Task created successful");
         return toDomainTask(savedEntity);
     }
 
@@ -98,6 +101,16 @@ public class TaskService {
                 taskToUpdate.priority()
         );
         taskRepository.save(updatedTask);
+        log.info("Task updated successful with id{}",id);
         return toDomainTask(updatedTask);
+    }
+
+    @Transactional
+    public void deleteTask(Long id){
+        if (!taskRepository.existsById(id)){
+            throw new NoSuchElementException("Task not found");
+        }
+        log.info("Task deleted successful with id{}", id);
+        taskRepository.deleteById(id);
     }
 }
