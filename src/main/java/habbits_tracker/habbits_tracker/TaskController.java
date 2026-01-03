@@ -43,7 +43,8 @@ public class TaskController {
 
     /**
      * Контроллер, который делает get-запрос для вывода всех задач
-     * @return возвращает код 200
+     * @return возвращает 200 код
+     *         в случае какой-либо ошибки вернет 500 код
      */
     @GetMapping()
     public ResponseEntity<List<Task>> getAllTasks(){
@@ -55,6 +56,7 @@ public class TaskController {
      * Контроллер, который делает post-запрос для создания задачи
      * @param taskToCreate доменное представление задачи
      * @return возвращает 201 код в случае успеха
+     *         возвращает 400 код в случает, если возникла проблема
      */
     @PostMapping()
     public ResponseEntity<Task> createTask(
@@ -71,7 +73,6 @@ public class TaskController {
      * @param taskToUpdate новое содержимое задачи
      * @return возвращает 200 код в случае успеха
      *         возвращает 400 код, если задача не существует
-     *         TODO:(поменять статус код)возвращает 500 код, если задача выполнена
      */
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(

@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.NoSuchElementException;
+
 /**
  * Контроллер, отвечающий за обработку исключений
  */
@@ -32,11 +34,16 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обрабытвает все исключения класса EntityNotFoundException
+     * Обрабытвает все исключения класса
+     *                      EntityNotFoundException
+     *                      NoSuchElementException
      * @param e само исключение
      * @return возвращает 404 код
      */
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler(exception = {
+            EntityNotFoundException.class,
+            NoSuchElementException.class
+    })
     public ResponseEntity<String> handleEntityNotFound(
             EntityNotFoundException e
     ){
