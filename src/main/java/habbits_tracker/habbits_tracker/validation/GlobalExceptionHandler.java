@@ -1,4 +1,4 @@
-package habbits_tracker.habbits_tracker;
+package habbits_tracker.habbits_tracker.validation;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
             NoSuchElementException.class
     })
     public ResponseEntity<String> handleEntityNotFound(
-            EntityNotFoundException e
+            Exception e
     ){
         log.error("HandleEntityNotFound", e);
         return ResponseEntity

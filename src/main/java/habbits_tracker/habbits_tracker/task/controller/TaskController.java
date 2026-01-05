@@ -1,5 +1,7 @@
-package habbits_tracker.habbits_tracker;
+package habbits_tracker.habbits_tracker.task.controller;
 
+import habbits_tracker.habbits_tracker.task.dto.Task;
+import habbits_tracker.habbits_tracker.task.service.TaskService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

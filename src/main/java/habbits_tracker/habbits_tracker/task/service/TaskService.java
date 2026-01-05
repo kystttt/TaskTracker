@@ -1,8 +1,12 @@
-package habbits_tracker.habbits_tracker;
+package habbits_tracker.habbits_tracker.task.service;
 
+import habbits_tracker.habbits_tracker.task.dto.Task;
+import habbits_tracker.habbits_tracker.task.entity.TaskEntity;
+import habbits_tracker.habbits_tracker.task.utils.TaskPriority;
+import habbits_tracker.habbits_tracker.task.utils.TaskStatus;
+import habbits_tracker.habbits_tracker.task.repository.TaskRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

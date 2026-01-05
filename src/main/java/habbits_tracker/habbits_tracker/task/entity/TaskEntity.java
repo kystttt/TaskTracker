@@ -1,5 +1,7 @@
-package habbits_tracker.habbits_tracker;
+package habbits_tracker.habbits_tracker.task.entity;
 
+import habbits_tracker.habbits_tracker.task.utils.TaskPriority;
+import habbits_tracker.habbits_tracker.task.utils.TaskStatus;
 import jakarta.persistence.*;
 
 
