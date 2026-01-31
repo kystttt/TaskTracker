@@ -56,7 +56,7 @@ public class TaskService {
     ){
         return new Task(
                 task.getId(),
-                task.creatorId,
+                task.getCreatorId(),
                 task.getAssignedUserId(),
                 task.getStatus(),
                 task.getCreateDateTime(),
