@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,11 +33,13 @@ public class TaskController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable("id") Long id
     ){
+        Long userId = jwt.getClaim("userId");
         log.info("Called getTaskById with id{}", id);
         try {
-            return ResponseEntity.ok(taskService.getTaskById(id));
+            return ResponseEntity.ok(taskService.getTaskByIdForUser(id, userId));
         }
         catch (NoSuchElementException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -49,9 +53,10 @@ public class TaskController {
      *         в случае какой-либо ошибки вернет 500 код
      */
     @GetMapping()
-    public ResponseEntity<List<Task>> getAllTasks(){
+    public ResponseEntity<List<Task>> getAllTasks(@AuthenticationPrincipal Jwt jwt){
         log.info("Called getAllTasks");
-        return ResponseEntity.ok(taskService.getAllTasks());
+        Long userId = jwt.getClaim("userId");
+        return ResponseEntity.ok(taskService.getAllTasksForUser(userId));
     }
 
     /**
@@ -62,11 +67,22 @@ public class TaskController {
      */
     @PostMapping()
     public ResponseEntity<Task> createTask(
+            @AuthenticationPrincipal Jwt jwt,
             @RequestBody @Valid Task taskToCreate
     ){
         log.info("Called method createTask");
+        Long userId = jwt.getClaim("userId");
+        Task fixed = new Task(
+                null,
+                userId,
+                taskToCreate.assignedUserId(),
+                taskToCreate.status(),
+                taskToCreate.createDateTime(),
+                taskToCreate.deadlineDate(),
+                taskToCreate.priority()
+        );
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(taskService.createTask(taskToCreate));
+                .body(taskService.createTask(fixed));
     }
 
     /**
@@ -78,12 +94,14 @@ public class TaskController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable("id") Long id,
             @RequestBody @Valid Task taskToUpdate
     ){
         log.info("Called methode updateTask");
-        var updatedTak = taskService.updateTask(id, taskToUpdate);
-        return ResponseEntity.ok(updatedTak);
+        Long userId = jwt.getClaim("userId");
+        var updatedTask = taskService.updateTaskForUser(id, userId, taskToUpdate);
+        return ResponseEntity.ok(updatedTask);
     }
 
     /**
@@ -92,12 +110,14 @@ public class TaskController {
      * @return возвращает 200 код, если операция прошла успешно
      *         возвращает 404 код, если айди не существующей задачи
      */
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable("id") Long id
     ){
+        Long userId = jwt.getClaim("userId");
         try{
-            taskService.deleteTask(id);
+            taskService.deleteTaskForUser(id, userId);
             return ResponseEntity.ok()
                     .build();
         } catch (NoSuchElementException e){

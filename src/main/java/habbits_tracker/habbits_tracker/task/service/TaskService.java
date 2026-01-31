@@ -30,25 +30,22 @@ public class TaskService {
 
     /**
      * Вытаескивает задачу из бд по ее айдишнику
-     * @param id задачи
+     * @param taskId задачи
      * @return возвращает доменное представление задачи
      */
-    public Task getTaskById(Long id) {
-        var existing = taskRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Not found reservation by id = "  + id));
-        return toDomainTask(existing);
+    public Task getTaskByIdForUser(Long taskId, Long currentUserId) {
+        var task = taskRepository.findByIdAndCreatorId(taskId, currentUserId)
+                .orElseThrow(() -> new NoSuchElementException("Task not found"));
+        return toDomainTask(task);
     }
 
     /**
-     * Вытастаскивает все задачи, которые есть в бд
+     * Вытастаскивает все задачи, которые есть в бд для конкретного пользователя
      * @return возвращает доменное представление задачи
      */
-    public List<Task> getAllTasks() {
-        List<TaskEntity> allEntities = taskRepository.findAll();
-        log.info("Get all tasks successful");
-        return allEntities.stream()
-                .map(this::toDomainTask
-                ).toList();
+    public List<Task> getAllTasksForUser(Long currentUserId) {
+        return taskRepository.findAllByCreatorId(currentUserId)
+                .stream().map(this::toDomainTask).toList();
     }
 
     private Task toDomainTask(
@@ -86,35 +83,36 @@ public class TaskService {
         return toDomainTask(savedEntity);
     }
 
-    public Task updateTask(Long id, Task taskToUpdate) {
-        var taskEntity = taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
-        if (taskEntity.getStatus() == TaskStatus.DONE){
+    public Task updateTaskForUser(Long taskId, Long currentUserId, Task taskToUpdate) {
+        var existing = taskRepository.findByIdAndCreatorId(taskId, currentUserId)
+                .orElseThrow(() -> new NoSuchElementException("Task not found"));
+
+        if (existing.getStatus() == TaskStatus.DONE) {
             throw new IllegalStateException("The completed task cannot be changed");
         }
-        if (!taskToUpdate.deadlineDate().isAfter(taskToUpdate.createDateTime())){
-            throw new IllegalArgumentException("Start date most be 1 day earlier than end date");
+
+        if (!taskToUpdate.deadlineDate().isAfter(taskToUpdate.createDateTime())) {
+            throw new IllegalArgumentException("Start date must be earlier than end date");
         }
-        var updatedTask = new TaskEntity(
-                taskEntity.getId(),
-                taskToUpdate.creatorId(),
+
+        var updated = new TaskEntity(
+                existing.getId(),
+                existing.getCreatorId(),
                 taskToUpdate.assignedUserId(),
                 taskToUpdate.status(),
                 taskToUpdate.createDateTime(),
                 taskToUpdate.deadlineDate(),
                 taskToUpdate.priority()
         );
-        taskRepository.save(updatedTask);
-        log.info("Task updated successful with id{}",id);
-        return toDomainTask(updatedTask);
+
+        taskRepository.save(updated);
+        return toDomainTask(updated);
     }
 
     @Transactional
-    public void deleteTask(Long id){
-        if (!taskRepository.existsById(id)){
-            throw new NoSuchElementException("Task not found");
-        }
-        log.info("Task deleted successful with id{}", id);
-        taskRepository.deleteById(id);
+    public void deleteTaskForUser(Long taskId, Long currentUserId) {
+        var existing = taskRepository.findByIdAndCreatorId(taskId, currentUserId)
+                .orElseThrow(() -> new NoSuchElementException("Task not found"));
+        taskRepository.deleteById(existing.getId());
     }
 }
