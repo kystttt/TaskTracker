@@ -16,12 +16,12 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/tasks")
-public class TaskController {
+public class UserTaskController {
     private final TaskService taskService;
-    private static final Logger log = LoggerFactory.getLogger(TaskService.class);
+    private static final Logger log = LoggerFactory.getLogger(UserTaskController.class);
 
 
-    public TaskController(TaskService taskService){
+    public UserTaskController(TaskService taskService){
         this.taskService = taskService;
     }
 
@@ -53,7 +53,9 @@ public class TaskController {
      *         в случае какой-либо ошибки вернет 500 код
      */
     @GetMapping()
-    public ResponseEntity<List<Task>> getAllTasks(@AuthenticationPrincipal Jwt jwt){
+    public ResponseEntity<List<Task>> getAllTasks(
+            @AuthenticationPrincipal Jwt jwt
+    ){
         log.info("Called getAllTasks");
         Long userId = jwt.getClaim("userId");
         return ResponseEntity.ok(taskService.getAllTasksForUser(userId));
@@ -74,6 +76,8 @@ public class TaskController {
         Long userId = jwt.getClaim("userId");
         Task fixed = new Task(
                 null,
+                taskToCreate.title(),
+                taskToCreate.description(),
                 userId,
                 taskToCreate.assignedUserId(),
                 taskToCreate.status(),

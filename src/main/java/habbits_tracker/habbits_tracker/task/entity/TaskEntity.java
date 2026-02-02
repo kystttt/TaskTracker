@@ -16,6 +16,12 @@ public class TaskEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @Column(name = "title", nullable = false, length = 120)
+    String title;
+
+    @Column(name = "description", length = 1024)
+    String description;
+
     @Column(name = "creator_id", nullable = false)
     Long creatorId;
 
@@ -36,11 +42,10 @@ public class TaskEntity {
     @Column(name = "priority", nullable = false)
     TaskPriority priority;
 
-    public TaskEntity() {
-    }
-
-    public TaskEntity(Long id, Long creatorId, Long assignedUserId, TaskStatus status, LocalDate createDateTime, LocalDate deadlineDate, TaskPriority priority) {
+    public TaskEntity(Long id, String title, String description, Long creatorId, Long assignedUserId, TaskStatus status, LocalDate createDateTime, LocalDate deadlineDate, TaskPriority priority) {
         this.id = id;
+        this.title = title;
+        this.description = description;
         this.creatorId = creatorId;
         this.assignedUserId = assignedUserId;
         this.status = status;
@@ -49,12 +54,32 @@ public class TaskEntity {
         this.priority = priority;
     }
 
+    public TaskEntity() {
+    }
+
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Long getCreatorId() {

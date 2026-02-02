@@ -11,6 +11,13 @@ public record Task(
         @Null
         Long id,
 
+        @NotBlank
+        @Size(max = 120)
+        String title,
+
+        @Size(max = 1024)
+        String description,
+
         @Null
         Long creatorId,
 
@@ -27,4 +34,5 @@ public record Task(
         LocalDate deadlineDate,
 
         TaskPriority priority
-) { }
+) {
+}
