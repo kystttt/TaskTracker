@@ -24,7 +24,7 @@ public class AdminTaskController {
         this.taskService = taskService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<Task>> getAllTasks(){
         log.info("Called gelAllTasks from ADMIN");
         return ResponseEntity.ok(taskService.getAllTasks());
