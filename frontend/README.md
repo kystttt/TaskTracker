@@ -121,5 +121,4 @@ From repo root:
   npm run lint
   ```
 
-Vite, TailwindCSS, React Query и Router уже настроены и готовы для интеграции с текущим TaskTracker backend без мок-данных.
 
